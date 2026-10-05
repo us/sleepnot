@@ -1,0 +1,5 @@
+build/
+*.zip
+DerivedData/
+*.xcuserdata/
+.DS_Store

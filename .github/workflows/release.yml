@@ -1,0 +1,24 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build zip
+        run: |
+          make zip
+          ls SLEEPNOT-*.zip
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: SLEEPNOT-*.zip
+          generate_release_notes: true
