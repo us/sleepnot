@@ -1,7 +1,7 @@
 # SLEEPNOT
 
 <p align="center">
-  <img src="Sleepnot/IconOff.png" width="96" alt="SLEEPNOT icon (hollow, OFF state)">
+  <img src="assets/logo-white.png" width="96" alt="SLEEPNOT icon (hollow, OFF state)">
 </p>
 
 <p align="center">
@@ -52,7 +52,7 @@ SLEEPNOT never blocks display sleep, never wakes a sleeping Mac, never touches l
 
 | OFF (hollow) | ON (filled) |
 |---|---|
-| <img src="Sleepnot/IconOff.png" width="48" alt="OFF"> | <img src="Sleepnot/IconOn.png" width="48" alt="ON"> |
+| <img src="assets/icon-off-white.png" width="48" alt="OFF"> | <img src="assets/icon-on-white.png" width="48" alt="ON"> |
 
 ## Project
 
