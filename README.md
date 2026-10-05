@@ -1,6 +1,32 @@
 # SLEEPNOT
 
-Tiny macOS menu bar utility. Prevents idle system sleep while letting the display sleep normally. Sleep is for humans.
+<p align="center">
+  <img src="Sleepnot/IconOff.png" width="96" alt="SLEEPNOT icon (hollow, OFF state)">
+</p>
+
+<p align="center">
+  <a href="https://github.com/us/sleepnot/releases/latest"><img src="https://img.shields.io/github/v/release/us/sleepnot" alt="Latest release"></a>
+  <a href="https://github.com/us/sleepnot/actions/workflows/ci.yml"><img src="https://github.com/us/sleepnot/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/macOS-13%2B-black" alt="macOS 13+">
+  <img src="https://img.shields.io/github/license/us/sleepnot" alt="MIT license">
+</p>
+
+<p align="center">Tiny macOS menu bar utility. Prevents idle system sleep while letting the display sleep normally. Sleep is for humans.</p>
+
+<p align="center">
+  <a href="https://github.com/us/sleepnot/releases/latest">Download latest release</a>
+</p>
+
+## Install
+
+Via Homebrew (own tap):
+
+```sh
+brew tap us/sleepnot
+brew install --cask sleepnot
+```
+
+Or download `SLEEPNOT-<version>.zip` from [Releases](https://github.com/us/sleepnot/releases/latest), unzip, move `SLEEPNOT.app` to Applications.
 
 ## Behavior
 
@@ -14,9 +40,15 @@ No window, no Dock icon (`LSUIElement`), no accounts, no network, no dependencie
 - **Left click** the menu bar icon: toggle on/off indefinitely.
 - **Right click** (or control+click): pick a duration (Indefinitely, 5 / 15 / 30 minutes, 1 / 2 / 5 hours) or quit.
 
-The icon is hollow when OFF and filled when ON. Timed runs stop automatically and the icon flips back.
+Timed runs stop automatically and the icon flips back.
 
 SLEEPNOT never blocks display sleep, never wakes a sleeping Mac, never touches lid-closed sleep, and holds no state between launches. Every launch starts OFF.
+
+## Icons
+
+| OFF (hollow) | ON (filled) |
+|---|---|
+| <img src="Sleepnot/IconOff.png" width="48" alt="OFF"> | <img src="Sleepnot/IconOn.png" width="48" alt="ON"> |
 
 ## Project
 
@@ -28,16 +60,6 @@ Sleepnot/
 ```
 
 192 lines of Swift plus two icon files. No third-party code.
-
-## Install
-
-Via Homebrew (after the first GitHub Release):
-
-```sh
-brew install --cask ./Casks/sleepnot.rb
-```
-
-Or download `SLEEPNOT-<version>.zip` from Releases, unzip, move `SLEEPNOT.app` to Applications.
 
 ## Build from source
 
@@ -55,7 +77,7 @@ open build/Release/SLEEPNOT.app
 1. Bump `MARKETING_VERSION` in the Xcode project.
 2. Update `version` in `Casks/sleepnot.rb` to match.
 3. Commit, tag `v<version>`, push the tag. The release workflow builds the zip and publishes the GitHub Release.
-4. Run `make zip` locally, paste the printed sha256 into `Casks/sleepnot.rb`.
+4. Paste the release zip sha256 into `Casks/sleepnot.rb`.
 
 ## Privacy
 
