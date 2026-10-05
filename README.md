@@ -1,6 +1,10 @@
 # SLEEPNOT
 
 <p align="center">
+  <img src="assets/menubar.png" alt="SLEEPNOT in the menu bar (leftmost icon)">
+</p>
+
+<p align="center">
   <img src="assets/logo-white.png" width="96" alt="SLEEPNOT icon (hollow, OFF state)">
 </p>
 
@@ -36,10 +40,6 @@ Or download `SLEEPNOT-<version>.zip` from [Releases](https://github.com/us/sleep
 No window, no Dock icon (`LSUIElement`), no accounts, no network, no dependencies.
 
 ## Usage
-
-<p>
-  <img src="assets/menubar.png" alt="SLEEPNOT in the menu bar (leftmost icon)">
-</p>
 
 - **Left click** the menu bar icon: toggle on/off indefinitely.
 - **Right click** (or control+click): pick a duration (Indefinitely, 5 / 15 / 30 minutes, 1 / 2 / 5 hours) or quit.
