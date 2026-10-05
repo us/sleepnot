@@ -1,11 +1,11 @@
 # SLEEPNOT
 
 <p align="center">
-  <img src="assets/menubar.png" alt="SLEEPNOT in the menu bar (leftmost icon)">
+  <img src="assets/logo-white.png" width="128" alt="SLEEPNOT icon (filled)">
 </p>
 
 <p align="center">
-  <img src="assets/logo-white.png" width="96" alt="SLEEPNOT icon (hollow, OFF state)">
+  <img src="assets/menubar.png" alt="SLEEPNOT in the menu bar (leftmost icon)">
 </p>
 
 <p align="center">
