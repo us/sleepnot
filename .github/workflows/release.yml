@@ -13,12 +13,14 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build zip
+      - name: Build artifacts
         run: |
-          make zip
-          ls SLEEPNOT-*.zip
+          make zip dmg
+          ls SLEEPNOT-*.zip SLEEPNOT-*.dmg
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: SLEEPNOT-*.zip
+          files: |
+            SLEEPNOT-*.zip
+            SLEEPNOT-*.dmg
           generate_release_notes: true

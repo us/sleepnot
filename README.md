@@ -30,7 +30,7 @@ brew tap us/sleepnot
 brew install --cask sleepnot
 ```
 
-Or download `SLEEPNOT-<version>.zip` from [Releases](https://github.com/us/sleepnot/releases/latest), unzip, move `SLEEPNOT.app` to Applications.
+Or download `SLEEPNOT-<version>.dmg` (drag to Applications) or `SLEEPNOT-<version>.zip` from [Releases](https://github.com/us/sleepnot/releases/latest). Universal binary: Apple Silicon and Intel.
 
 ## Behavior
 
