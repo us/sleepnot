@@ -20,7 +20,9 @@ final class AwakeController {
     }
 
     /// Block sleep for the given seconds, then stop automatically.
+    /// Main thread only: the timer needs the main runloop to fire.
     func start(duration: TimeInterval?) {
+        dispatchPrecondition(condition: .onQueue(.main))
         stop()
         activity = ProcessInfo.processInfo.beginActivity(
             options: [.idleSystemSleepDisabled],
@@ -39,6 +41,7 @@ final class AwakeController {
 
     /// Restore normal sleep behavior.
     func stop() {
+        dispatchPrecondition(condition: .onQueue(.main))
         timer?.invalidate()
         timer = nil
         if let activity {

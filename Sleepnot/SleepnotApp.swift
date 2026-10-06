@@ -43,6 +43,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    func applicationWillTerminate(_: Notification) {
+        awake.stop()
+    }
+
     @objc private func buttonClicked(_ sender: NSStatusBarButton) {
         // Synthesized clicks (e.g. accessibility) may arrive with no
         // currentEvent; treat that as a plain left click and toggle.

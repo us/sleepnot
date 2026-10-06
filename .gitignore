@@ -1,6 +1,7 @@
 build/
 *.zip
 *.dmg
+.oc/
 DerivedData/
 *.xcuserdata/
 .DS_Store

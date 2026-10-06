@@ -43,46 +43,75 @@ final class Updater {
         request.setValue("SLEEPNOT", forHTTPHeaderField: "User-Agent")
         request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
         URLSession.shared.dataTask(with: request) { [weak self] data, _, _ in
-            guard let self else { return }
-            do {
-                guard
-                    let data,
-                    let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                    let tag = json["tag_name"] as? String,
-                    let pageString = json["html_url"] as? String,
-                    let page = URL(string: pageString)
-                else { throw UpdaterError.badResponse }
-                let version = tag.hasPrefix("v") ? String(tag.dropFirst()) : tag
-                let assets = json["assets"] as? [[String: Any]] ?? []
-                self.zipURL = assets
-                    .compactMap { ($0["browser_download_url"] as? String).flatMap(URL.init(string:)) }
-                    .first(where: { $0.lastPathComponent.hasSuffix(".zip") })
-                if Self.isNewer(version, than: Self.currentVersion) {
-                    self.pending = (version, page)
-                    self.state = .available(version: version, page: page)
-                    if notify { self.offerInstall(version: version) }
-                } else {
-                    self.state = .upToDate
-                    if notify { self.alert("You're up to date.", "SLEEPNOT \(Self.currentVersion) is the latest version.") }
-                }
-            } catch {
-                self.state = .failed("Check failed.")
-                if notify { self.alert("Update check failed.", "Could not reach GitHub. Try again later.") }
+            // AppKit is main-thread only: never touch state or alerts here.
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                self.handleCheck(data: data, notify: notify)
             }
         }.resume()
+    }
+
+    /// Runs on the main thread. Parses the release JSON and updates state.
+    private func handleCheck(data: Data?, notify: Bool) {
+        do {
+            guard
+                let data,
+                let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                let tag = json["tag_name"] as? String,
+                let pageString = json["html_url"] as? String,
+                let page = URL(string: pageString)
+            else { throw UpdaterError.badResponse }
+            let version = tag.hasPrefix("v") ? String(tag.dropFirst()) : tag
+            let assets = json["assets"] as? [[String: Any]] ?? []
+            let urls = assets
+                .compactMap { ($0["browser_download_url"] as? String).flatMap(URL.init(string:)) }
+            // Prefer the exact release artifact; never install a surprise file,
+            // and never download from outside GitHub.
+            let expected = "SLEEPNOT-\(version).zip"
+            guard let url = urls.first(where: { $0.lastPathComponent == expected })
+                ?? urls.first(where: { $0.lastPathComponent.hasSuffix(".zip") }),
+                url.host?.hasSuffix("github.com") == true
+            else {
+                pending = nil
+                zipURL = nil
+                state = .failed("No download found.")
+                if notify { alert("Update check failed.", "The release has no usable download.") }
+                return
+            }
+            zipURL = url
+            if Self.isNewer(version, than: Self.currentVersion) {
+                pending = (version, page)
+                state = .available(version: version, page: page)
+                if notify { offerInstall(version: version) }
+            } else {
+                pending = nil
+                state = .upToDate
+                if notify { alert("You're up to date.", "SLEEPNOT \(Self.currentVersion) is the latest version.") }
+            }
+        } catch {
+            pending = nil
+            state = .failed("Check failed.")
+            if notify { alert("Update check failed.", "Could not reach GitHub. Try again later.") }
+        }
     }
 
     /// Download the new zip and swap it in, then relaunch.
     /// Only runs when the app lives in /Applications; otherwise the
     /// release page is opened so the user can install by hand.
     func installAvailable() {
-        guard
-            case let .available(version, page) = state,
-            !installing,
-            let zipURL
-        else { return }
+        guard case let .available(_, page) = state, !installing else { return }
+        guard let zipURL else {
+            alert("Update unavailable.", "The release has no download. Get it from the release page.")
+            NSWorkspace.shared.open(page)
+            return
+        }
         let bundleURL = Bundle.main.bundleURL
         guard bundleURL.path.hasPrefix("/Applications/") else {
+            NSWorkspace.shared.open(page)
+            return
+        }
+        guard FileManager.default.isWritableFile(atPath: bundleURL.path) else {
+            alert("Can't update in place.", "/Applications is not writable. Get it from the release page.")
             NSWorkspace.shared.open(page)
             return
         }
@@ -90,52 +119,53 @@ final class Updater {
         state = .checking
         URLSession.shared.downloadTask(with: zipURL) { [weak self] location, _, _ in
             guard let self, let location else {
-                self?.finishInstall(error: "Download failed.")
+                DispatchQueue.main.async { [weak self] in
+                    self?.finishInstall(error: "Download failed.")
+                }
                 return
             }
-            do {
-                try self.swap(bundleURL: bundleURL, zip: location, version: version)
-            } catch {
-                self.finishInstall(error: (error as? LocalizedError)?.errorDescription ?? "Install failed.")
+            // Heavy work stays off the main thread; UI hops back after.
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                guard let self else { return }
+                do {
+                    try self.swap(bundleURL: bundleURL, zip: location)
+                    DispatchQueue.main.async {
+                        NSWorkspace.shared.open(bundleURL)
+                        NSApplication.shared.terminate(nil)
+                    }
+                } catch {
+                    let message = (error as? LocalizedError)?.errorDescription ?? "Install failed."
+                    DispatchQueue.main.async { [weak self] in
+                        self?.finishInstall(error: message)
+                    }
+                }
             }
         }.resume()
     }
 
     // MARK: - Private
 
-    private func swap(bundleURL: URL, zip: URL, version: String) throws {
+    private func swap(bundleURL: URL, zip: URL) throws {
         let work = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: work, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: work) }
         try run("/usr/bin/ditto", ["-x", "-k", zip.path, work.path])
         guard let fresh = try FileManager.default
             .contentsOfDirectory(at: work, includingPropertiesForKeys: nil)
-            .first(where: { $0.pathExtension == "app" })
+            .first(where: { $0.lastPathComponent == "SLEEPNOT.app" })
         else { throw UpdaterError.badArchive }
         try run("/usr/bin/xattr", ["-dr", "com.apple.quarantine", fresh.path])
-        let backup = bundleURL.deletingLastPathComponent()
-            .appendingPathComponent(bundleURL.deletingPathExtension().lastPathComponent + ".old")
-        try? FileManager.default.removeItem(at: backup)
-        try FileManager.default.moveItem(at: bundleURL, to: backup)
-        do {
-            try FileManager.default.moveItem(at: fresh, to: bundleURL)
-            try? FileManager.default.removeItem(at: backup)
-        } catch {
-            try? FileManager.default.moveItem(at: backup, to: bundleURL)
-            throw error
-        }
-        DispatchQueue.main.async {
-            NSWorkspace.shared.open(bundleURL)
-            NSApplication.shared.terminate(nil)
-        }
+        // Atomic in-place replacement: either the new app is there or the
+        // old one is untouched. No half-moved state, no stray backup.
+        _ = try FileManager.default.replaceItemAt(bundleURL, withItemAt: fresh)
     }
 
     private func finishInstall(error: String) {
         installing = false
         if let pending {
             state = .available(version: pending.version, page: pending.page)
-            alert("Update failed.", "\(error) You can still download it by hand.")
-            NSWorkspace.shared.open(pending.page)
+            let answer = alert("Update failed.", error, buttons: ["Get It by Hand", "Not Now"])
+            if answer == .alertFirstButtonReturn { NSWorkspace.shared.open(pending.page) }
         } else {
             state = .failed(error)
             alert("Update failed.", error)
@@ -153,6 +183,9 @@ final class Updater {
 
     @discardableResult
     private func alert(_ title: String, _ body: String, buttons: [String] = ["OK"]) -> NSApplication.ModalResponse {
+        dispatchPrecondition(condition: .onQueue(.main))
+        // Agent app with no Dock icon: bring the alert forward.
+        NSApp.activate(ignoringOtherApps: true)
         let alert = NSAlert()
         alert.messageText = title
         alert.informativeText = body

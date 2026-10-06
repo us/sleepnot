@@ -26,7 +26,6 @@ verify:
 	@test -z "$$(grep -rn "idleDisplaySleepDisabled" Sleepnot/ || true)" || (echo "FAIL: must never block display sleep" && exit 1)
 	@plutil -p $(APP)/Contents/Info.plist | grep -q '"LSUIElement" => true' || (echo "FAIL: LSUIElement must be true (run make build first)" && exit 1)
 	@echo "OK: verify passed (version $(VERSION))"
-	@echo "OK: verify passed (version $(VERSION))"
 
 clean:
 	rm -rf build $(ZIP) $(DMG)

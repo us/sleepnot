@@ -44,7 +44,7 @@ No window, no Dock icon (`LSUIElement`), no accounts, no network, no dependencie
 - **Left click** the menu bar icon: toggle on/off indefinitely.
 - **Right click** (or control+click): pick a duration (Indefinitely, 5 / 15 / 30 minutes, 1 / 2 / 5 hours), check for updates, or quit.
 
-Timed runs stop automatically and the icon flips back.
+Timed runs stop automatically and the icon flips back. The menu status line reads "Sleep allowed.", "Awake. Sleep is for humans.", or the remaining time ("Awake for 5 min more.").
 
 SLEEPNOT never blocks display sleep, never wakes a sleeping Mac, never touches lid-closed sleep, and holds no state between launches. Every launch starts OFF.
 
@@ -81,7 +81,7 @@ open build/Release/SLEEPNOT.app
 
 1. Bump `MARKETING_VERSION` in the Xcode project.
 2. Update `version` in `Casks/sleepnot.rb` to match.
-3. Commit, tag `v<version>`, push the tag. The release workflow builds the zip and publishes the GitHub Release.
+3. Commit, tag `v<version>`, push the tag. The release workflow builds the zip and dmg and publishes the GitHub Release.
 4. Paste the release zip sha256 into `Casks/sleepnot.rb`.
 
 ## Privacy
