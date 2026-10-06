@@ -1,7 +1,7 @@
 # SLEEPNOT
 
 <p align="center">
-  <img src="assets/logo-white.png" width="128" alt="SLEEPNOT icon (filled)">
+  <img src="assets/logo.png" width="128" alt="SLEEPNOT icon (filled)">
 </p>
 
 <p align="center">
