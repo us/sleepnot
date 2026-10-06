@@ -42,7 +42,7 @@ No window, no Dock icon (`LSUIElement`), no accounts, no network, no dependencie
 ## Usage
 
 - **Left click** the menu bar icon: toggle on/off indefinitely.
-- **Right click** (or control+click): pick a duration (Indefinitely, 5 / 15 / 30 minutes, 1 / 2 / 5 hours) or quit.
+- **Right click** (or control+click): pick a duration (Indefinitely, 5 / 15 / 30 minutes, 1 / 2 / 5 hours), check for updates, or quit.
 
 Timed runs stop automatically and the icon flips back.
 
@@ -60,10 +60,11 @@ SLEEPNOT never blocks display sleep, never wakes a sleeping Mac, never touches l
 Sleepnot/
 ├── SleepnotApp.swift      # NSStatusItem, icon, menu (left toggle, right durations)
 ├── AwakeController.swift  # single ProcessInfo activity, optional timer
+├── Updater.swift          # version check plus one-click install, no dependencies
 ├── IconOff.png / IconOn.png
 ```
 
-192 lines of Swift plus two icon files. No third-party code.
+424 lines of Swift plus icon files. No third-party code.
 
 ## Build from source
 
@@ -85,7 +86,7 @@ open build/Release/SLEEPNOT.app
 
 ## Privacy
 
-No network calls, no analytics, no file or process inspection, no special permissions. It creates one idle-sleep assertion while ON and removes it when OFF.
+One network call: version check against GitHub Releases (on launch, daily, and when you pick Check for Updates). No analytics, no file or process inspection, no special permissions. It creates one idle-sleep assertion while ON and removes it when OFF.
 
 ## License
 

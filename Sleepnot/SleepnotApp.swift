@@ -22,6 +22,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     ]
 
     private let awake = AwakeController()
+    private let updater = Updater()
     private var statusItem: NSStatusItem?
 
     func applicationDidFinishLaunching(_: Notification) {
@@ -32,6 +33,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = item
         awake.onChange = { [weak self] in self?.refresh() }
         refresh()
+        // Update checks: shortly after launch, then daily. Silent
+        // unless a new version (or a manual check) needs attention.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 8) { [weak self] in
+            self?.updater.check()
+        }
+        Timer.scheduledTimer(withTimeInterval: 24 * 3600, repeats: true) { [weak self] _ in
+            self?.updater.check()
+        }
     }
 
     @objc private func buttonClicked(_ sender: NSStatusBarButton) {
@@ -73,6 +82,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             item.state = awake.activeDuration == duration.seconds ? .on : .off
         }
         menu.addItem(.separator())
+        switch updater.state {
+        case let .available(version, _):
+            let update = menu.addItem(
+                withTitle: "Update to v\(version)…", action: #selector(installUpdate), keyEquivalent: ""
+            )
+            update.target = self
+        case .checking:
+            let item = menu.addItem(withTitle: "Checking for Updates…", action: nil, keyEquivalent: "")
+            item.isEnabled = false
+        case .idle, .upToDate, .failed:
+            let check = menu.addItem(
+                withTitle: "Check for Updates…", action: #selector(checkUpdates), keyEquivalent: ""
+            )
+            check.target = self
+        }
+        menu.addItem(.separator())
         let quit = menu.addItem(withTitle: "Quit SLEEPNOT", action: #selector(quitApp), keyEquivalent: "")
         quit.target = self
         menu.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.maxY), in: button)
@@ -102,6 +127,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func quitApp() {
         NSApplication.shared.terminate(nil)
+    }
+
+    @objc private func checkUpdates() {
+        updater.check(notify: true)
+    }
+
+    @objc private func installUpdate() {
+        updater.installAvailable()
     }
 }
 
