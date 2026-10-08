@@ -15,7 +15,7 @@
   <img src="https://img.shields.io/github/license/us/sleepnot" alt="MIT license">
 </p>
 
-<p align="center">Tiny macOS menu bar utility. Prevents idle system sleep while letting the display sleep normally. Sleep is for humans.</p>
+<p align="center">Tiny macOS menu bar utility. Keeps your Mac awake, even with the lid closed, while letting the display sleep normally. Sleep is for humans.</p>
 
 <p align="center">
   <a href="https://github.com/us/sleepnot/releases/latest">Download latest release</a>
@@ -34,8 +34,12 @@ Or download `SLEEPNOT-<version>.dmg` (drag to Applications) or `SLEEPNOT-<versio
 
 ## Behavior
 
-- **ON**: blocks idle system sleep via `ProcessInfo.beginActivity([.idleSystemSleepDisabled])`. The display can still turn off.
-- **OFF**: normal macOS sleep behavior.
+- **ON**: blocks idle system sleep via `ProcessInfo.beginActivity([.idleSystemSleepDisabled])`. The display can still turn off. Also runs `pmset disablesleep 1` so closing the lid does not sleep the Mac.
+- **OFF**: normal macOS sleep behavior (`disablesleep 0`).
+
+Closing the lid cannot be blocked without root, so the first time you turn it ON, macOS asks for your password once. That installs `/etc/sudoers.d/sleepnot`, which allows only `pmset disablesleep 0` and `pmset disablesleep 1` without a password. Every later toggle is silent. If you decline, SLEEPNOT still blocks idle sleep and the menu says closing the lid may sleep.
+
+A closed Mac that stays awake gets warm: turn SLEEPNOT OFF before putting the laptop in a bag. To remove the rule: `sudo rm /etc/sudoers.d/sleepnot`.
 
 No window, no Dock icon (`LSUIElement`), no accounts, no network, no dependencies.
 
@@ -46,7 +50,7 @@ No window, no Dock icon (`LSUIElement`), no accounts, no network, no dependencie
 
 Timed runs stop automatically and the icon flips back. The menu status line reads "Sleep allowed.", "Awake. Sleep is for humans.", or the remaining time ("Awake for 5 min more.").
 
-SLEEPNOT never blocks display sleep, never wakes a sleeping Mac, never touches lid-closed sleep, and holds no state between launches. Every launch starts OFF.
+SLEEPNOT never blocks display sleep, never wakes a sleeping Mac, and holds no state between launches. Every launch starts OFF (and clears a leftover `disablesleep` from a crashed run).
 
 ## Icons
 
