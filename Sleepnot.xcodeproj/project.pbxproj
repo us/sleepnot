@@ -10,6 +10,7 @@
 		A1B2C3D4000000000000000C /* SleepnotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D40000000000000006 /* SleepnotApp.swift */; };
 		A1B2C3D4000000000000000D /* AwakeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D40000000000000007 /* AwakeController.swift */; };
 		A1B2C3D4000000000000001C /* Updater.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4000000000000001B /* Updater.swift */; };
+		A1B2C3D4000000000000002C /* LidGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4000000000000002B /* LidGuard.swift */; };
 		A1B2C3D40000000000000016 /* IconOff.png in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D40000000000000014 /* IconOff.png */; };
 		A1B2C3D40000000000000017 /* IconOn.png in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D40000000000000015 /* IconOn.png */; };
 		A1B2C3D40000000000000019 /* SLEEPNOT.icns in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D40000000000000018 /* SLEEPNOT.icns */; };
@@ -20,6 +21,7 @@
 		A1B2C3D40000000000000006 /* SleepnotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepnotApp.swift; sourceTree = "<group>"; };
 		A1B2C3D40000000000000007 /* AwakeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwakeController.swift; sourceTree = "<group>"; };
 		A1B2C3D4000000000000001B /* Updater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Updater.swift; sourceTree = "<group>"; };
+		A1B2C3D4000000000000002B /* LidGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LidGuard.swift; sourceTree = "<group>"; };
 		A1B2C3D40000000000000014 /* IconOff.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = IconOff.png; sourceTree = "<group>"; };
 		A1B2C3D40000000000000015 /* IconOn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = IconOn.png; sourceTree = "<group>"; };
 		A1B2C3D4000000000000001A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -59,6 +61,7 @@
 				A1B2C3D40000000000000006 /* SleepnotApp.swift */,
 				A1B2C3D40000000000000007 /* AwakeController.swift */,
 				A1B2C3D4000000000000001B /* Updater.swift */,
+				A1B2C3D4000000000000002B /* LidGuard.swift */,
 				A1B2C3D40000000000000014 /* IconOff.png */,
 				A1B2C3D40000000000000015 /* IconOn.png */,
 				A1B2C3D40000000000000018 /* SLEEPNOT.icns */,
@@ -140,6 +143,7 @@
 			files = (
 				A1B2C3D4000000000000000D /* AwakeController.swift in Sources */,
 				A1B2C3D4000000000000001C /* Updater.swift in Sources */,
+				A1B2C3D4000000000000002C /* LidGuard.swift in Sources */,
 				A1B2C3D4000000000000000C /* SleepnotApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

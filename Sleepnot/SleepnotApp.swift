@@ -32,6 +32,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         item.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
         statusItem = item
         awake.onChange = { [weak self] in self?.refresh() }
+        // A crashed run can leave lid-closed sleep disabled; every launch starts OFF.
+        if LidGuard.isActive { LidGuard.disable() }
         refresh()
         // Update checks: shortly after launch, then daily. Silent
         // unless a new version (or a manual check) needs attention.
@@ -109,6 +111,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func statusLine() -> String {
         guard awake.isAwake else { return "Sleep allowed." }
+        guard awake.lidProtected else { return "Awake, but closing the lid may sleep." }
         guard let remaining = awake.remaining else { return "Awake. Sleep is for humans." }
         return "Awake for \(Self.format(remaining)) more."
     }

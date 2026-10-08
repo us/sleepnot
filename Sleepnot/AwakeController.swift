@@ -1,12 +1,14 @@
 import Foundation
 
 /// Holds a single `ProcessInfo` activity: blocks idle system sleep,
-/// never touches display sleep.
+/// never touches display sleep. Also vetoes lid-closed sleep via `LidGuard`.
 /// Supports timed runs; stops automatically when the timer fires.
 final class AwakeController {
     private(set) var isAwake = false
     private(set) var activeUntil: Date?
     private(set) var activeDuration: TimeInterval?
+    /// False when the admin prompt was declined: closing the lid may still sleep.
+    private(set) var lidProtected = false
 
     /// Called on state changes (used to refresh the icon).
     var onChange: (() -> Void)?
@@ -28,6 +30,7 @@ final class AwakeController {
             options: [.idleSystemSleepDisabled],
             reason: "SLEEPNOT is keeping the Mac awake"
         )
+        lidProtected = LidGuard.enable()
         activeDuration = duration
         if let duration {
             activeUntil = Date().addingTimeInterval(duration)
@@ -48,6 +51,8 @@ final class AwakeController {
             ProcessInfo.processInfo.endActivity(activity)
         }
         activity = nil
+        LidGuard.disable()
+        lidProtected = false
         activeUntil = nil
         activeDuration = nil
         isAwake = false
